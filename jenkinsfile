@@ -1,5 +1,18 @@
 pipeline {
-    agen
+    agent any
+    parameters {
+        choice(
+            name: 'ACTION',
+            choices: ['plan', 'apply'],
+            description: 'Select the action to perform'
+        )
+        choice(
+            name: 'ENVIRONMENT',
+            choices: ['dev', 'uat', 'prod'],
+            description: 'Select the target environment'
+        )
+        string(
+            name: 'BRANCH',
             defaultValue: 'main',
             description: 'Enter the branch name to checkout'
         )

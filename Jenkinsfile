@@ -6,20 +6,10 @@ pipeline {
             choices: ['plan', 'apply'],
             description: 'Select the action to perform'
         )
-        choice(
-            name: 'ENVIRONMENT',
-            choices: ['dev', 'uat', 'prod'],
-            description: 'Select the target environment'
-        )
         string(
             name: 'BRANCH',
             defaultValue: 'main',
             description: 'Enter the branch name to checkout'
-        )
-        string(
-            name: 'VARIABLE',
-            defaultValue: '',
-            description: 'Enter the variable value (e.g. key=value)'
         )
     }
     stages {
@@ -28,29 +18,28 @@ pipeline {
                 checkout scmGit(
                     branches: [[name: "*/${params.BRANCH}"]],
                     extensions: [],
-                    userRemoteConfigs: [[url: 'https://github.com/pratikzende882002-hash/Terraform-Automation.git']]
+                    userRemoteConfigs: [[url: 'https://github.com/ygminds73/Terraform-Automation.git']]
                 )
             }
         }
+
         stage("terraform init") {
             steps {
                 sh("terraform init -reconfigure")
             }
         }
+
         stage("Action") {
             steps {
                 script {
-                    def varFlag = params.VARIABLE?.trim() ? "-var '${params.VARIABLE}'" : ""
-                    def varFile = "-var-file='envs/${params.ENVIRONMENT}.tfvars'"
-
                     switch (params.ACTION) {
                         case 'plan':
-                            echo "Executing Plan for ${params.ENVIRONMENT}..."
-                            sh "terraform plan ${varFile} ${varFlag}"
+                            echo 'Executing Plan...'
+                            sh "terraform plan"
                             break
                         case 'apply':
-                            echo "Executing Apply for ${params.ENVIRONMENT}..."
-                            sh "terraform apply --auto-approve ${varFile} ${varFlag}"
+                            echo 'Executing Apply...'
+                            sh "terraform apply --auto-approve"
                             break
                         default:
                             error 'Unknown action'
